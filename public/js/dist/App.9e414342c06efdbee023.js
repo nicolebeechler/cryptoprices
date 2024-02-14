@@ -33,7 +33,7 @@ function App() {
     path: "/currencies",
     element: /*#__PURE__*/React.createElement(_pages_Currencies_Currencies__WEBPACK_IMPORTED_MODULE_0__["default"], null)
   }), /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Route, {
-    path: "/price",
+    path: "/price/:symbol",
     element: /*#__PURE__*/React.createElement(_pages_Price_Price_js__WEBPACK_IMPORTED_MODULE_2__["default"], null)
   })));
 }
@@ -99,9 +99,46 @@ root.render( /*#__PURE__*/React.createElement(react__WEBPACK_IMPORTED_MODULE_0__
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Currencies)
 /* harmony export */ });
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
 function Currencies(props) {
-  return /*#__PURE__*/React.createElement("h1", null, "This is the Currencies Component");
+  const currencies = [{
+    name: "Bitcoin",
+    symbol: "BTC"
+  }, {
+    name: "Litecoin",
+    symbol: "LTC"
+  }, {
+    name: "Ethereum",
+    symbol: "ETH"
+  }, {
+    name: "Ethereum Classic",
+    symbol: "ETC"
+  }, {
+    name: "Stellar Lumens",
+    symbol: "XLM"
+  }, {
+    name: "Dash",
+    symbol: "DASH"
+  }, {
+    name: "Ripple",
+    symbol: "XRP"
+  }, {
+    name: "Zcash",
+    symbol: "ZEC"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "currencies"
+  }, currencies.map(coin => {
+    const {
+      name,
+      symbol
+    } = coin;
+    return /*#__PURE__*/React.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_0__.Link, {
+      to: "/price/".concat(symbol)
+    }, /*#__PURE__*/React.createElement("h2", null, name));
+  }));
 }
 ;
 
@@ -133,9 +170,52 @@ function Main(props) {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Price)
 /* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+
 function Price(props) {
-  return /*#__PURE__*/React.createElement("h1", null, "This is the Price Component");
+  // Our api key from coinapi.io
+  const apiKey = "87A367D3-57D9-456F-91D4-37BB6A1C8A47";
+  // Grabbing the Currency symbol from the URL Params
+  const params = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useParams)();
+  const symbol = params.symbol;
+  // Using the other two variables to create our URL
+  const url = "http://rest.coinapi.io/v1/exchangerate/".concat(symbol, "/USD?apikey=").concat(apiKey);
+
+  //state to hold the coin data
+  const [coin, setCoin] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("null");
+
+  //function to fetch coin data
+  const getCoin = async () => {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setCoin(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // useEffect to run getCoin when component mounts
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    getCoin();
+  }, []);
+
+  // loaded function for when data is fetched
+  const loaded = () => {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, coin.asset_id_base, "/", coin.asset_id_quote), /*#__PURE__*/React.createElement("h2", null, coin.rate));
+  };
+
+  // Function for when data doesn't exist
+  const loading = () => {
+    return /*#__PURE__*/React.createElement("h1", null, "Loading...");
+  };
+
+  // if coin has data, run the loaded function, otherwise, run loading
+  return coin ? loaded() : loading();
 }
 ;
 
@@ -445,4 +525,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=App.09e55e1554a4e5e5b04cdce9379883eb.js.map
+//# sourceMappingURL=App.6cfa2c7180f4e46790e982311aeba2a1.js.map
